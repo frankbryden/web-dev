@@ -1,0 +1,9 @@
+<?xml version="1.0" standalone="no"?>
+<svg viewBox="0 0 500 500"
+     xmlns="http://www.w3.org/2000/svg" version="1.1">
+  <path d="M200,300 Q400,50 600,300 T1000,300"
+        fill="none" stroke="red" stroke-width="5"  />
+  <path class="SamplePath" stroke="green" stroke-width="5" d="M100,200 C100,100 250,100 250,200
+                                       S400,300 400,200" />
+  
+</svg>

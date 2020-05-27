@@ -1,0 +1,17 @@
+<?xml version="1.0" standalone="no"?>
+<svg viewBox="0 0 500 500"
+     xmlns="http://www.w3.org/2000/svg" version="1.1">
+  <desc class="SamplePath" fill="none" stroke="red" d="M100,200 C100,100 250,100 250,200
+                                       S400,300 400,200" />
+  <path class="SamplePath" fill="none" stroke="red" d="M100,200 Q100,100 250,100 250,200
+                                       C250,300 400,300 400,200" />
+  <path class="SamplePath" fill="none" stroke="red" d="M100,200 L100,100 L250,100 L250,200
+                                       L250,200" />
+  <path class="SamplePath" fill="none" stroke="blue" d="M100,200 l10,10 20,-100 10,50" />
+  <path d="M200,300 L400,50 L600,300
+           L800,550 L1000,300"
+        fill="none" stroke="#888888" stroke-width="2" />
+  <path d="M200,300.8401c-0.0492-0.0232-0.0984-0.046-0.1478-0.0692c-17.5145-8.0881-30.0135-4.9405-37.4157-0.8752c-10.4772,5.7531-17.5582,17.0209-19.428,30.9158c-2.0208,15.0541,8.2581,25.486,19.4572,27.9868c9.327,2.0931,17.485-1.616,19.8427-9.0255c2.8452-8.9625-2.4808-16.5321-7.1791-23.2117c-3.4207-4.8602-6.65-9.4529-5.4698-12.928"
+        fill="none" stroke="red" stroke-width="5"  />
+  
+</svg>

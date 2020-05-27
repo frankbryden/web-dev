@@ -1,0 +1,15 @@
+#myCavas{
+  width: 1100px;
+  display: inline-block;
+}
+
+.nbInput {
+  width: 100px;
+  margin: 2px;
+}
+
+.selected {
+  background: rgb(232, 102, 102);
+}
+
+.selectionButton, button:focus {outline:0;}
