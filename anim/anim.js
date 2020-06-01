@@ -1,12 +1,12 @@
-var canvas = document.getElementById("myCanvas");
-var ctx = canvas.getContext('2d');
+let canvas = document.getElementById("myCanvas");
+let ctx = canvas.getContext('2d');
 
 canvas.width = window.innerWidth - 10;
 canvas.height = window.innerHeight - 10;
 
 
-var gravity = 1;
-var friction = 0.95;
+let gravity = 1;
+let friction = 0.95;
 
 function Ball(id, x, y, dy, radius, color) {
 	this.x = x;
@@ -31,7 +31,7 @@ function Ball(id, x, y, dy, radius, color) {
 			this.bouncing = false;
 		}
 		this.y += this.dy;
-		for (var id in this.bounceTimeout) {
+		for (let id in this.bounceTimeout) {
 			this.bounceTimeout[parseInt(id, 10)].timer -= 1;
 			if (this.bounceTimeout[id].timer <= 0) {
 				delete (this.bounceTimeout[id]);
@@ -53,12 +53,12 @@ function Ball(id, x, y, dy, radius, color) {
 	};
 
 	this.collide = function (otherBall) {
-		for (var id in this.bounceTimeout) {
+		for (let id in this.bounceTimeout) {
 			if (otherBall.id == id) {
 				return false;
 			}
 		}
-		var tempDy = otherBall.dy;
+		let tempDy = otherBall.dy;
 		otherBall.dy = this.dy;
 		this.dy = tempDy;
 		this.bounceTimeout[otherBall.id] = { timer: 50 };
@@ -70,19 +70,19 @@ function Ball(id, x, y, dy, radius, color) {
 	};
 }
 
-var b = new Ball(-1, 100, 200, 0.5, 50, 'rgb(100, 50, 255)');
-var ballArray = [];
-var count = 0;
+let b = new Ball(-1, 100, 200, 0.5, 50, 'rgb(100, 50, 255)');
+let ballArray = [];
+let count = 0;
 function animate() {
 	count++;
 	if (count > 0) {
 		requestAnimationFrame(animate);
 	}
 	ctx.clearRect(0, 0, canvas.width, canvas.height);
-	for (var i = 0; i < ballArray.length; i++) {
+	for (let i = 0; i < ballArray.length; i++) {
 		//if (ballArray[i])
 		ballArray[i].update();
-		for (var j = i + 1; j < ballArray.length; j++) {
+		for (let j = i + 1; j < ballArray.length; j++) {
 			if (ballArray[i].getDistance(ballArray[j]) <= ballArray[i].radius + ballArray[j].radius) {
 				//We have a collision
 				ballArray[i].collide(ballArray[j]);
@@ -93,11 +93,11 @@ function animate() {
 }
 
 function init() {
-	for (var i = 0; i < 10; i++) {
-		var x = Math.random() * window.innerWidth;
-		var y = Math.random() * (window.innerHeight - 50);
-		var ball = new Ball(i, x, y, Math.random() * 3, Math.random() * 10 + 20, 'rgb(10, 100, 100)');
-		for (var j = 0; j < ballArray.length; j++) {
+	for (let i = 0; i < 10; i++) {
+		let x = Math.random() * window.innerWidth;
+		let y = Math.random() * (window.innerHeight - 50);
+		let ball = new Ball(i, x, y, Math.random() * 3, Math.random() * 10 + 20, 'rgb(10, 100, 100)');
+		for (let j = 0; j < ballArray.length; j++) {
 			if (ballArray[j].getDistance(ball) <= ballArray[j].radius + ball.radius) {
 				j = 0;
 				ball.x = Math.random() * window.innerWidth;

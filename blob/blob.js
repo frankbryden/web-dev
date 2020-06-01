@@ -1,9 +1,9 @@
-var canvas = document.getElementById("myCanvas");
-var ctx = canvas.getContext('2d');
+let canvas = document.getElementById("myCanvas");
+let ctx = canvas.getContext('2d');
 
-var slotColours = {1: 'rgb(160, 160, 160)', 2: 'rgb(64, 188, 80)', 5: 'rgb(17, 50, 196)', 10: 'rgb(168, 29, 214)', 50: 'rgb(214, 211, 47)', 100: 'rgb(205, 89, 247)'};
+let slotColours = {1: 'rgb(160, 160, 160)', 2: 'rgb(64, 188, 80)', 5: 'rgb(17, 50, 196)', 10: 'rgb(168, 29, 214)', 50: 'rgb(214, 211, 47)', 100: 'rgb(205, 89, 247)'};
 
-var States = {
+let States = {
   TRACING : 1,
   DRAWN : 2,
   ERASING : 3,
@@ -94,7 +94,7 @@ function Blob(x, y, radius, ballCount, colour){
   this.spawnBalls = function(){
     this.balls = [];
     let angIncr = 2*Math.PI/this.ballCount;
-    for (var i = 0; i < this.ballCount; i++){
+    for (let i = 0; i < this.ballCount; i++){
       this.balls.push(new Ball(this.x, this.y, this.radius, angIncr*i, colour));
     }
   };
@@ -110,13 +110,13 @@ function Blob(x, y, radius, ballCount, colour){
       //this.ballCount--;
       //this.spawnBalls();
     }
-    for (var ball of this.balls){
+    for (let ball of this.balls){
       ball.update(this.delta);
     }
     ctx.beginPath();
     ctx.moveTo(this.balls[0].getX(), this.balls[0].getY());
     ctx.lineWidth = 3;
-    for (var i = 1; i < this.balls.length; i++){
+    for (let i = 1; i < this.balls.length; i++){
       ctx.lineTo(this.balls[i].getX(), this.balls[i].getY());
     }
     ctx.closePath();
@@ -128,7 +128,7 @@ function Blob(x, y, radius, ballCount, colour){
   this.draw = function(){
     ctx.fillStyle = "rgb(0, 0, 0)";
     ctx.fillText("ball count : " + this.balls.length, 750, 50);
-    /*for (var ball of this.balls){
+    /*for (let ball of this.balls){
       ball.draw();
     }*/
   };
@@ -142,9 +142,9 @@ function sleep(ms) {
     return new Promise(resolve => setTimeout(resolve, ms));
 }
 
-var count = 0;
+let count = 0;
 //Cool values : 80
-var blob = new Blob(200, 200, 150, 30, "rgb(200, 100, 90)");
+let blob = new Blob(200, 200, 150, 30, "rgb(200, 100, 90)");
 blob.spawnBalls();
 console.log("Spawned balls");
 
