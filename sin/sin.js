@@ -145,7 +145,7 @@ function sleep(ms) {
 
 var count = 0;
 //Cool values : 80
-var wave = new Wave(canvas.width, canvas.height, [94]);
+var wave = new Wave(canvas.width, canvas.height, [12]);
 var wave2 = new Wave(700, 200, [84]);
 wave.delta = 0;
 wave2.delta = 1.5;
