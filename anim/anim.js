@@ -74,6 +74,7 @@ let b = new Ball(-1, 100, 200, 0.5, 50, 'rgb(100, 50, 255)');
 let ballArray = [];
 let count = 0;
 function animate() {
+	console.log("anim");
 	count++;
 	if (count > 0) {
 		requestAnimationFrame(animate);
