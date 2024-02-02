@@ -67,24 +67,33 @@ class AnimatedSquare {
         this.stepSize = width/stepCount;
         console.log(`StepCount = ${stepCount}, stepSize = ${this.stepSize}, width = ${width}`);
         this.step = 0;
+        this.angle = angle;
         this.lines = {
             top: this.createLine(this.x, this.y, this.x, this.y, angle),
             right: this.createLine(this.x + this.width, this.y, this.x, this.y, angle+Math.PI/2),
-            bottom: this.createLine(this.x + this.width, this.y + this.width, this.x, this.y, angle+Math.PI),
-            left: this.createLine(this.x, this.y + this.width, this.x, this.y, angle-Math.PI/2),
+            // bottom: this.createLine(this.x + this.width, this.y + this.width, this.x, this.y, angle+Math.PI),
+            // left: this.createLine(this.x, this.y + this.width, this.x, this.y, angle-Math.PI/2),
         };
         console.log(this.lines);
     }
 
     createLine(start_x, start_y, end_x, end_y, angle) {
+        const vel_x = Math.cos(angle);
+        const vel_y = Math.sin(angle);
+        const x = vel_x * this.width;
+        const y = vel_y * this.width;
+        const x_rot = vel_x * (x - this.x) - vel_y * (y - this.y) + this.x;
+        const y_rot = vel_y * (x - this.x) + vel_x * (y - this.y) + this.y;
+        console.log(x_rot);
+        console.log(y_rot);
         return {
             start: {
                 x: start_x,
                 y: start_y,
             },
             end: {
-                x: end_x,
-                y: end_y,
+                x: x_rot,
+                y: y_rot,
             },
             vel_x: Math.cos(angle)*this.stepSize,
             vel_y: Math.sin(angle)*this.stepSize,
@@ -99,15 +108,23 @@ class AnimatedSquare {
     }
 
     render() {
-        // for (let line of Object.values(this.lines)) {
+        // this.ctx.save();
+        // this.ctx.translate(this.x, this.y);
+        // this.ctx.rotate(this.angle);
+        this.ctx.beginPath();
+        this.ctx.arc(this.x, this.y, 5, 0, 2*Math.PI);
+        this.ctx.fillColor = 'red';
+        this.ctx.fill();
         for (let lineName of Object.keys(this.lines)) {
             let line = this.lines[lineName];
             this.ctx.beginPath()
             this.ctx.moveTo(line.start.x, line.start.y);
-            this.ctx.lineTo(line.start.x + (this.step*line.vel_x), line.start.y + (this.step*line.vel_y));
-            this.ctx.fillText(`${lineName} with angle ${line.angle}`, line.start.x + (this.step*line.vel_x), line.start.y + (this.step*line.vel_y) - line.start.y/10);
+            // this.ctx.lineTo(line.start.x + (this.step*line.vel_x), line.start.y + (this.step*line.vel_y));
+            this.ctx.lineTo(line.end.x, line.end.y);
+            this.ctx.fillText(`${lineName} with angle ${line.angle} (dist = ${Math.sqrt(Math.pow(line.start.x - line.start.x - (this.step*line.vel_x), 2) + (line.start.y - line.start.y - (this.step*line.vel_y)))})`, line.start.x + (this.step*line.vel_x), line.start.y + (this.step*line.vel_y) - line.start.y/10);
             this.ctx.stroke();
         }
+        // this.ctx.restore();
         // this.ctx.beginPath();
         // this.ctx.rect(this.x, this.y, this.width, this.width);
         // this.ctx.stroke();
@@ -115,77 +132,8 @@ class AnimatedSquare {
 
 }
 
-
-function Circ (x, y, dist, torque, radius, colour){
-  this.polar = {
-    theta : 0,
-    radius : dist
-  };
-  this.x = x;
-  this.y = y;
-  this.torque = torque;
-  this.opacity = baseOpacity;
-  //console.log("Created a node with x = " + this.x + " y = " + this.y + " vel x = " + this.velocity.x + " velY = " + this.velocity.y);
-  this.radius = radius;
-  this.inEffect = false;
-  this.colour = colour;
-  this.update = function(){
-    this.polar.theta += this.torque;
-    if (this.polar.theta >= 2 * Math.PI){
-      this.polar.theta = 0;
-    }
-    
-    this.draw();
-  }
-  
-  this.getX = function(angleDiff){
-    return this.x + Math.cos(this.polar.theta - angleDiff) * this.polar.radius;
-  }
-  
-  this.getY = function(angleDiff){
-    return this.y + Math.sin(this.polar.theta - angleDiff) * this.polar.radius;
-  }
-  
-  this.draw = function(){
-    for (var i = 0; i < trailCount; i++){
-      ctx.save();
-      ctx.beginPath();
-      if (this.torque > 0){
-        ctx.arc(this.getX(i/trailAngleDiff), this.getY(i/trailAngleDiff), this.radius, 0, 2*Math.PI, false);
-      } else {
-        ctx.arc(this.getX(-i/trailAngleDiff), this.getY(-i/trailAngleDiff), this.radius, 0, 2*Math.PI, false);
-      }
-      ctx.fillStyle = this.colour;
-      ctx.globalAlpha = 1 - 0.9*(i/trailCount);
-      ctx.fill();
-      if (i < trailCount - 1){
-        ctx.closePath();
-        ctx.beginPath();
-        ctx.globalAlpha /= 2;
-        ctx.moveTo(this.getX(i/trailAngleDiff), this.getY(i/trailAngleDiff));
-        ctx.lineTo(this.getX((i + 1)/trailAngleDiff), this.getY((i + 1)/trailAngleDiff));
-        ctx.strokeStyle = this.colour;
-        ctx.stroke();
-        ctx.closePath();
-      } else {
-        ctx.closePath();
-      }
-      ctx.restore();
-    }
-    
-    /*ctx.beginPath();
-    ctx.arc(this.x, this.y, this.polar.radius, 0, 2*Math.PI, false);
-    ctx.stroke();
-    ctx.closePath();*/
-    //console.log("Drawing circle at x = " + this.getX() + " and y = " + this.getY() + " with radius "+ this.radius);
-  }
-}
-
-
-var circleArray = [];
-var circ = new Circ(canvas.width/2, canvas.height/2, 100, 0.1, 20, colours[0]);
 let square = new AnimatedSquare(ctx, 300, 300, 100, 200, 0);
-let square2 = new AnimatedSquare(ctx, 800, 300, 100, 200, Math.PI);
+let square2 = new AnimatedSquare(ctx, 800, 300, 100, 200, Math.PI/6);
 let squares = [];
 function init(){
     for (let i = 0; i < 10; i += 1) {
