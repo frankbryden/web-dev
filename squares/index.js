@@ -68,13 +68,39 @@ class AnimatedSquare {
         console.log(`StepCount = ${stepCount}, stepSize = ${this.stepSize}, width = ${width}`);
         this.step = 0;
         this.angle = angle;
-        this.lines = {
-            top: this.createLine(this.x, this.y, this.x, this.y, angle),
-            right: this.createLine(this.x + this.width, this.y, this.x, this.y, angle+Math.PI/2),
-            // bottom: this.createLine(this.x + this.width, this.y + this.width, this.x, this.y, angle+Math.PI),
-            // left: this.createLine(this.x, this.y + this.width, this.x, this.y, angle-Math.PI/2),
-        };
+        this.direction = 1;
+        
+        // this.lines = {
+        //     top: this.createLine(this.x, this.y, this.x, this.y, angle),
+        //     right: this.createLine(this.x + this.width, this.y, this.x, this.y, angle+Math.PI/2),
+        //     // bottom: this.createLine(this.x + this.width, this.y + this.width, this.x, this.y, angle+Math.PI),
+        //     // left: this.createLine(this.x, this.y + this.width, this.x, this.y, angle-Math.PI/2),
+        // };
+        this.lines = this.getLines(this.angle, this.width, this.stepSize);
         console.log(this.lines);
+    }
+
+    getLines(startAngle, width, stepSize) {
+        let lines = [];
+        let curX = this.x;
+        let curY = this.y;
+        let curAngle = startAngle;
+        for (let i = 0; i < 4; i++) {
+            lines.push({
+                start: {
+                    x: curX,
+                    y: curY,
+                },
+                vel: {
+                    x: Math.cos(curAngle)*stepSize,
+                    y: Math.sin(curAngle)*stepSize,
+                }
+            });
+            curX += Math.cos(curAngle)*width;
+            curY += Math.sin(curAngle)*width;
+            curAngle += Math.PI/2;
+        }
+        return lines;
     }
 
     createLine(start_x, start_y, end_x, end_y, angle) {
@@ -102,8 +128,18 @@ class AnimatedSquare {
     }
 
     update() {
-        if (this.step < this.stepCount){
-            this.step += this.stepSize;
+        if (this.step >= this.stepCount) {
+            return;
+        }
+        this.step += this.direction;
+        if (this.direction > 0) {
+            if (this.step > this.stepCount){
+                this.direction *= -1;
+            }
+        } else {
+            if (this.step < 0){
+                this.direction *= -1;
+            }
         }
     }
 
@@ -111,17 +147,17 @@ class AnimatedSquare {
         // this.ctx.save();
         // this.ctx.translate(this.x, this.y);
         // this.ctx.rotate(this.angle);
-        this.ctx.beginPath();
-        this.ctx.arc(this.x, this.y, 5, 0, 2*Math.PI);
-        this.ctx.fillColor = 'red';
-        this.ctx.fill();
+        // this.ctx.beginPath();
+        // this.ctx.arc(this.x, this.y, 5, 0, 2*Math.PI);
+        // this.ctx.fillColor = 'red';
+        // this.ctx.fill();
         for (let lineName of Object.keys(this.lines)) {
             let line = this.lines[lineName];
             this.ctx.beginPath()
             this.ctx.moveTo(line.start.x, line.start.y);
-            // this.ctx.lineTo(line.start.x + (this.step*line.vel_x), line.start.y + (this.step*line.vel_y));
-            this.ctx.lineTo(line.end.x, line.end.y);
-            this.ctx.fillText(`${lineName} with angle ${line.angle} (dist = ${Math.sqrt(Math.pow(line.start.x - line.start.x - (this.step*line.vel_x), 2) + (line.start.y - line.start.y - (this.step*line.vel_y)))})`, line.start.x + (this.step*line.vel_x), line.start.y + (this.step*line.vel_y) - line.start.y/10);
+            this.ctx.lineTo(line.start.x + (this.step*line.vel.x), line.start.y + (this.step*line.vel.y));
+            // this.ctx.lineTo(line.end.x, line.end.y);
+            // this.ctx.fillText(`${lineName} with angle ${line.angle} (dist = ${Math.sqrt(Math.pow(line.start.x - line.start.x - (this.step*line.vel.x), 2) + (line.start.y - line.start.y - (this.step*line.vel.y)))})`, line.start.x + (this.step*line.vel.x), line.start.y + (this.step*line.vel.y) - line.start.y/10);
             this.ctx.stroke();
         }
         // this.ctx.restore();
@@ -132,12 +168,28 @@ class AnimatedSquare {
 
 }
 
-let square = new AnimatedSquare(ctx, 300, 300, 100, 200, 0);
+let square = new AnimatedSquare(ctx, 300, 300, 200, 10, 0);
 let square2 = new AnimatedSquare(ctx, 800, 300, 100, 200, Math.PI/6);
 let squares = [];
+let x = 400;
+let y = 300;
+
 function init(){
-    for (let i = 0; i < 10; i += 1) {
-        squares.push(new AnimatedSquare(ctx, i * 100, i * 100, 80, 50, i * (2*Math.PI/10)));
+    let angle = 0;
+    let width = 500;
+    const squareCount = 100;
+    const rotations = 3.5;
+    const angleStep = (2*Math.PI*rotations)/squareCount;
+    const widthStepRatio = 0.1;
+    for (let i = 0; i < squareCount; i += 1) {
+        let centerX = x-Math.cos(angle)*width/2 + Math.sin(angle)*width/2;
+        let centerY = y-Math.sin(angle)*width/2 - Math.cos(angle)*width/2;
+        console.log(x, y, centerX, centerY);
+        squares.push(new AnimatedSquare(ctx, centerX, centerY, width, 100, angle));
+        angle += angleStep;
+        // x += widthStepRatio*width*Math.cos(angle);
+        // y += widthStepRatio*width*Math.sin(angle);
+        width *= (1-widthStepRatio);
     }
 }
 
@@ -145,15 +197,22 @@ function animate(){
     // requestAnimationFrame(animate);
     ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-    // for (let square of squares) {
-    //     square.update();
-    //     square.render();
-    // }
+    // ctx.save();
+    // ctx.beginPath();
+    // ctx.arc(x, y, 5, 0, 2*Math.PI);
+    // ctx.fillStyle = "red";
+    // ctx.fill();
+    // ctx.restore();
 
-    square.update();
-    square.render();
-    square2.update();
-    square2.render();
+    for (let square of squares) {
+        square.update();
+        square.render();
+    }
+
+    // square.update();
+    // square.render();
+    // square2.update();
+    // square2.render();
 }
 
 init();
