@@ -34,6 +34,13 @@ addEventListener('mousemove', event => {
     mouse.y = event.clientY
 });
 
+addEventListener('keyup', event => {
+    console.log(event.key);
+    if (event.key == "r") {
+        init();
+    }
+})
+
 class AnimationObject {
     constructor(shape) {
         this.shape = shape;
@@ -78,7 +85,6 @@ class AnimatedSquareHook {
         this.ctx = ctx;
         this.stepCount = stepCount;
         this.step = 0;
-        console.log(`New Hook with squareA = ${JSON.stringify(squareA)} and squareB = ${JSON.stringify(squareB)}`)
 
         this.lines = [];
         for (let i = 0; i < 4; i++) {
@@ -110,7 +116,6 @@ class AnimatedSquareHook {
 
     update() {
         this.step += 1;
-        console.log(this.step);
     }
 
     render() {
@@ -132,13 +137,11 @@ class AnimatedSquare {
         this.width = width;
         this.stepCount = stepCount;
         this.stepSize = width/stepCount;
-        console.log(`StepCount = ${stepCount}, stepSize = ${this.stepSize}, width = ${width}`);
         this.step = 0;
         this.angle = angle;
         this.direction = 1;
 
         this.lines = this.getLines(this.angle, this.width, this.stepSize);
-        console.log(this.lines);
     }
 
     getLines(startAngle, width, stepSize) {
@@ -171,8 +174,6 @@ class AnimatedSquare {
         const y = vel_y * this.width;
         const x_rot = vel_x * (x - this.x) - vel_y * (y - this.y) + this.x;
         const y_rot = vel_y * (x - this.x) + vel_x * (y - this.y) + this.y;
-        console.log(x_rot);
-        console.log(y_rot);
         return {
             start: {
                 x: start_x,
@@ -220,24 +221,30 @@ class AnimatedSquare {
 
 }
 
-let square = new AnimatedSquare(ctx, 300, 300, 200, 10, 0);
-let square2 = new AnimatedSquare(ctx, 800, 300, 100, 200, Math.PI/6);
 let squares = [];
 let hooks = [];
 let x = 400;
 let y = 300;
 
+menu = document.getElementById("menu");
+let square_count_slider = new Slider(menu, "Square count", 1, 500, 1, 20);
+let rotations_slider = new Slider(menu, "Rotations", 0, 4, 0.1, 0.4);
+let width_step_ratio_slider = new Slider(menu, "Width step ratio", 0, 1, 0.05, 0.2);
+
+console.log(square_count_slider.value());
+
 function init(){
+    hooks = [];
+    squares = [];
     let angle = 0;
     let width = 500;
-    const squareCount = 30;
-    const rotations = 0.5;
+    const squareCount = square_count_slider.value();
+    const rotations = rotations_slider.value();
     const angleStep = (2*Math.PI*rotations)/squareCount;
-    const widthStepRatio = 0.2;
+    const widthStepRatio = width_step_ratio_slider.value();
     for (let i = 0; i < squareCount; i += 1) {
         let centerX = x-Math.cos(angle)*width/2 + Math.sin(angle)*width/2;
         let centerY = y-Math.sin(angle)*width/2 - Math.cos(angle)*width/2;
-        console.log(x, y, centerX, centerY);
         squares.push(new AnimationObject(new AnimatedSquare(ctx, centerX, centerY, width, 50 - i, angle)));
         if (i > 0) {
             hooks.push(new AnimationObject(new AnimatedSquareHook(ctx, squares[i - 1], squares[i], 10)));
