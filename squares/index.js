@@ -130,7 +130,7 @@ class AnimatedSquareHook {
 
 
 class AnimatedSquare {
-    constructor(ctx, x, y, width, stepCount, angle) {
+    constructor(ctx, x, y, width, stepCount, angle, darkness) {
         this.ctx = ctx;
         this.x = x;
         this.y = y;
@@ -139,6 +139,7 @@ class AnimatedSquare {
         this.stepSize = width/stepCount;
         this.step = 0;
         this.angle = angle;
+        this.darkness = darkness;
         this.direction = 1;
 
         this.lines = this.getLines(this.angle, this.width, this.stepSize);
@@ -210,12 +211,14 @@ class AnimatedSquare {
     render() {
         for (let lineName of Object.keys(this.lines)) {
             let line = this.lines[lineName];
+            this.ctx.save();
             this.ctx.beginPath();
             this.ctx.moveTo(line.start.x, line.start.y);
             this.ctx.lineTo(line.start.x + (this.step*line.vel.x), line.start.y + (this.step*line.vel.y));
-            // this.ctx.lineTo(line.end.x, line.end.y);
-            // this.ctx.fillText(`${lineName} with angle ${line.angle} (dist = ${Math.sqrt(Math.pow(line.start.x - line.start.x - (this.step*line.vel.x), 2) + (line.start.y - line.start.y - (this.step*line.vel.y)))})`, line.start.x + (this.step*line.vel.x), line.start.y + (this.step*line.vel.y) - line.start.y/10);
+            this.ctx.lineWidth = 2;
+            this.ctx.strokeStyle = `rgb(${this.darkness}, 255, 100)`;
             this.ctx.stroke();
+            this.ctx.restore();
         }
     }
 
@@ -242,18 +245,21 @@ function init(){
     const rotations = rotations_slider.value();
     const angleStep = (2*Math.PI*rotations)/squareCount;
     const widthStepRatio = width_step_ratio_slider.value();
+    let d = 0;
     for (let i = 0; i < squareCount; i += 1) {
         let centerX = x-Math.cos(angle)*width/2 + Math.sin(angle)*width/2;
         let centerY = y-Math.sin(angle)*width/2 - Math.cos(angle)*width/2;
-        squares.push(new AnimationObject(new AnimatedSquare(ctx, centerX, centerY, width, 50 - i, angle)));
+        squares.push(new AnimationObject(new AnimatedSquare(ctx, centerX, centerY, width, Math.max(20 - i, 1), angle, Math.floor(Math.min(d*(255/squareCount), 255)))));
+        d++;
         if (i > 0) {
-            hooks.push(new AnimationObject(new AnimatedSquareHook(ctx, squares[i - 1], squares[i], 10)));
+            hooks.push(new AnimationObject(new AnimatedSquareHook(ctx, squares[i - 1], squares[i], 5)));
             squares[i-1].registerNextAnimationObject(hooks[i - 1]);
             hooks[i - 1].registerNextAnimationObject(squares[i]);
         }
         angle += angleStep;
         width *= (1-widthStepRatio);
     }
+    console.log(squares);
     squares[0].startAnim();
 }
 
