@@ -168,28 +168,6 @@ class AnimatedSquare {
         return lines;
     }
 
-    createLine(start_x, start_y, end_x, end_y, angle) {
-        const vel_x = Math.cos(angle);
-        const vel_y = Math.sin(angle);
-        const x = vel_x * this.width;
-        const y = vel_y * this.width;
-        const x_rot = vel_x * (x - this.x) - vel_y * (y - this.y) + this.x;
-        const y_rot = vel_y * (x - this.x) + vel_x * (y - this.y) + this.y;
-        return {
-            start: {
-                x: start_x,
-                y: start_y,
-            },
-            end: {
-                x: x_rot,
-                y: y_rot,
-            },
-            vel_x: Math.cos(angle)*this.stepSize,
-            vel_y: Math.sin(angle)*this.stepSize,
-            angle: angle,
-        }
-    }
-
     isDoneWithAnim() {
         return this.step >= this.stepCount;
     }
@@ -209,17 +187,17 @@ class AnimatedSquare {
     }
 
     render() {
+        this.ctx.save();
+        this.ctx.strokeStyle = `rgb(${this.darkness}, ${this.darkness}, ${this.darkness})`;
         for (let lineName of Object.keys(this.lines)) {
             let line = this.lines[lineName];
-            this.ctx.save();
             this.ctx.beginPath();
             this.ctx.moveTo(line.start.x, line.start.y);
             this.ctx.lineTo(line.start.x + (this.step*line.vel.x), line.start.y + (this.step*line.vel.y));
             this.ctx.lineWidth = 2;
-            this.ctx.strokeStyle = `rgb(${this.darkness}, 255, 100)`;
             this.ctx.stroke();
-            this.ctx.restore();
         }
+        this.ctx.restore();
     }
 
 }
@@ -230,9 +208,9 @@ let x = 400;
 let y = 300;
 
 menu = document.getElementById("menu");
-let square_count_slider = new Slider(menu, "Square count", 1, 500, 1, 20);
-let rotations_slider = new Slider(menu, "Rotations", 0, 4, 0.1, 0.4);
-let width_step_ratio_slider = new Slider(menu, "Width step ratio", 0, 1, 0.05, 0.2);
+let square_count_slider = new Slider(menu, "Square count", 1, 500, 1, 50);
+let rotations_slider = new Slider(menu, "Rotations", 0, 4, 0.1, 0.3);
+let width_step_ratio_slider = new Slider(menu, "Width step ratio", 0, 1, 0.05, 0.1);
 
 console.log(square_count_slider.value());
 
@@ -245,12 +223,10 @@ function init(){
     const rotations = rotations_slider.value();
     const angleStep = (2*Math.PI*rotations)/squareCount;
     const widthStepRatio = width_step_ratio_slider.value();
-    let d = 0;
     for (let i = 0; i < squareCount; i += 1) {
         let centerX = x-Math.cos(angle)*width/2 + Math.sin(angle)*width/2;
         let centerY = y-Math.sin(angle)*width/2 - Math.cos(angle)*width/2;
-        squares.push(new AnimationObject(new AnimatedSquare(ctx, centerX, centerY, width, Math.max(20 - i, 1), angle, Math.floor(Math.min(d*(255/squareCount), 255)))));
-        d++;
+        squares.push(new AnimationObject(new AnimatedSquare(ctx, centerX, centerY, width, Math.max(20 - i, 1), angle, Math.floor(Math.min(i*(255/squareCount), 255)))));
         if (i > 0) {
             hooks.push(new AnimationObject(new AnimatedSquareHook(ctx, squares[i - 1], squares[i], 5)));
             squares[i-1].registerNextAnimationObject(hooks[i - 1]);
@@ -281,4 +257,4 @@ function animate(){
 init();
 animate();
 
-// setInterval(animate, 10);
+// setInterval(animate, 30);

@@ -21,8 +21,8 @@ class Slider {
         this.input.type = "range";
         this.input.min = this.min;
         this.input.max = this.max;
-        this.input.value = this.val;
         this.input.step = this.step;
+        this.input.value = this.val.toString();
 
         //output display
         const output = document.createElement("output");
